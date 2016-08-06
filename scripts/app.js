@@ -63,30 +63,29 @@ APP.Main = (function() {
    */
   function onStoryData (key, details) {
 
-    // This seems odd. Surely we could just select the story
-    // directly rather than looping through all of them.
-    var storyElements = document.querySelectorAll('.story');
+    var story = document.getElementById('s-' + key);
 
-    for (var i = 0; i < storyElements.length; i++) {
+    if (story != null) {
 
-      if (storyElements[i].getAttribute('id') === 's-' + key) {
+      details.time *= 1000;
+      var html = storyTemplate(details);
+      story.innerHTML = html;
 
-        details.time *= 1000;
-        var story = storyElements[i];
-        var html = storyTemplate(details);
-        story.innerHTML = html;
-        story.addEventListener('click', onStoryClick.bind(this, details));
-        story.classList.add('clickable');
+      // Apply scale transform to score element
+      var score = story.querySelector('.story__score');
+      // Cap size at 1.75 times original div size
+      var scoreWeight = Math.min((.85 + Math.floor(score.innerHTML * .1) / 100), 1.75);
+      score.style.transform = "scale(" + scoreWeight + ", " + scoreWeight + ")";
 
-        // Tick down. When zero we can batch in the next load.
-        storyLoadCount--;
+      story.addEventListener('click', onStoryClick.bind(this, details));
+      story.classList.add('clickable');
 
+      storyLoadCount--;
+
+      if (storyLoadCount > 0) {
+        requestAnimationFrame(onStoryData.bind(key, details));
       }
     }
-
-    // Colorize on complete.
-    if (storyLoadCount === 0)
-      colorizeAndScaleStories();
   }
 
   function onStoryClick(details) {
@@ -254,35 +253,35 @@ APP.Main = (function() {
    */
   function colorizeAndScaleStories() {
 
-    var storyElements = document.querySelectorAll('.story');
+    // var storyElements = document.querySelectorAll('.story');
 
-    // It does seem awfully broad to change all the
-    // colors every time!
-    for (var s = 0; s < storyElements.length; s++) {
+    // // It does seem awfully broad to change all the
+    // // colors every time!
+    // for (var s = 0; s < storyElements.length; s++) {
 
-      var story = storyElements[s];
-      var score = story.querySelector('.story__score');
-      var title = story.querySelector('.story__title');
+    //   var story = storyElements[s];
+    //   var score = story.querySelector('.story__score');
+    //   var title = story.querySelector('.story__title');
 
-      // Base the scale on the y position of the score.
-      var height = main.offsetHeight;
-      var mainPosition = main.getBoundingClientRect();
-      var scoreLocation = score.getBoundingClientRect().top -
-          document.body.getBoundingClientRect().top;
-      var scale = Math.min(1, 1 - (0.05 * ((scoreLocation - 170) / height)));
-      var opacity = Math.min(1, 1 - (0.5 * ((scoreLocation - 170) / height)));
+    //   // Base the scale on the y position of the score.
+    //   var height = main.offsetHeight;
+    //   var mainPosition = main.getBoundingClientRect();
+    //   var scoreLocation = score.getBoundingClientRect().top -
+    //       document.body.getBoundingClientRect().top;
+    //   var scale = Math.min(1, 1 - (0.05 * ((scoreLocation - 170) / height)));
+    //   var opacity = Math.min(1, 1 - (0.5 * ((scoreLocation - 170) / height)));
 
-      score.style.width = (scale * 40) + 'px';
-      score.style.height = (scale * 40) + 'px';
-      score.style.lineHeight = (scale * 40) + 'px';
+    //   score.style.width = (scale * 40) + 'px';
+    //   score.style.height = (scale * 40) + 'px';
+    //   score.style.lineHeight = (scale * 40) + 'px';
 
-      // Now figure out how wide it is and use that to saturate it.
-      scoreLocation = score.getBoundingClientRect();
-      var saturation = (100 * ((scoreLocation.width - 38) / 2));
+    //   // Now figure out how wide it is and use that to saturate it.
+    //   scoreLocation = score.getBoundingClientRect();
+    //   var saturation = (100 * ((scoreLocation.width - 38) / 2));
 
-      score.style.backgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
-      title.style.opacity = opacity;
-    }
+    //   score.style.backgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
+    //   title.style.opacity = opacity;
+    // }
   }
 
   main.addEventListener('touchstart', function(evt) {

@@ -186,7 +186,7 @@ APP.Main = (function() {
         left = storyDetailsPosition.left;
 
       // Now figure out where it needs to go.
-      left += (0 - storyDetailsPosition.left) * 0.4;
+      left += (0 - storyDetailsPosition.left) * 0.8;
 
       // Set up the next bit of the animation if there is more to do.
       if (Math.abs(left) > 0.5)
@@ -225,7 +225,7 @@ APP.Main = (function() {
       var target = mainPosition.width + 100;
 
       // Now figure out where it needs to go.
-      left += (target - storyDetailsPosition.left) * 0.4;
+      left += (target - storyDetailsPosition.left) * 0.8;
 
       // Set up the next bit of the animation if there is more to do.
       if (Math.abs(left - target) > 0.5) {
